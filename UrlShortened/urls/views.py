@@ -12,7 +12,6 @@ def index(request:HttpRequest):
 
 def add_url(request:HttpRequest):
     if request.method == "POST":
-        # url = request.GET.get('url')
         form = UrlForm(request.POST)
         if form.is_valid():
             try:
@@ -29,9 +28,7 @@ def add_url(request:HttpRequest):
             modelUrl.owner = "Anonymous"
             modelUrl.save()
 
-            final_url = f'http://{request.get_host()}/{hash}'
-
-            return render(request, 'okUrl.html', { 'url': final_url })
+            return render(request, 'okUrl.html', { 'hash': hash })
 
 
     return HttpResponse("Fez errado alguma coisa ai meu rei")
@@ -44,21 +41,3 @@ def get_url(request:HttpRequest, hash: str):
         return redirect(url)
 
     return HttpResponse("Vixe, sem url aqui")
-
-# def index(request:HttpRequest):
-#     print("index")
-#     print(request.GET.get('url'))
-#
-#     request.get_signed_cookie
-#     return HttpResponse("Hello om!")
-#
-# def printMessage(request:HttpRequest, q:int):
-#     print("print")
-#     print(request)
-#
-#     bod = ''
-#
-#     for i in range(q):
-#         bod += "Meu nome\n"
-#
-#     return HttpResponse(bod)
