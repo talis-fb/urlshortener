@@ -1,18 +1,30 @@
+from datetime import datetime
 import random, string
 from django.http import HttpResponse, HttpRequest
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render, get_object_or_404
 from urls.models import Url
+from urls.templates.addUrl import UrlForm
+
+def index(request:HttpRequest):
+    form = UrlForm()
+    return render(request, 'addUrl.html', {'form': form})
 
 def add_url(request:HttpRequest):
-    if request.method == "GET":
-        url = request.GET.get('url')
-        if url:
+    if request.method == "POST":
+        # url = request.GET.get('url')
+        form = UrlForm(request.POST)
+        if form.is_valid():
+            url = request.POST['url']
             hash = ''.join(random.choices(string.ascii_letters, k=7))
-            registration = Url(hash=hash, original_url=url)
-            registration.created_at = 321312
-            registration.owner = "Eu"
-            registration.save()
-            return HttpResponse(hash)
+
+            modelUrl= Url(hash=hash, original_url=url)
+            modelUrl.created_at = int(datetime.now().timestamp())
+            modelUrl.owner = "Anonymous"
+            modelUrl.save()
+
+            final_url = f'http://{request.get_host()}/{hash}'
+
+            return render(request, 'okUrl.html', { 'url': final_url })
 
 
     return HttpResponse("Fez errado alguma coisa ai meu rei")
@@ -21,7 +33,8 @@ def get_url(request:HttpRequest, hash: str):
     target:Url = Url.objects.get(hash=hash)
     url = target.original_url
     if url:
-        return redirect(f'https://{url}')
+        print(f'REDIRECT -> {url}')
+        return redirect(url)
 
     return HttpResponse("Vixe, sem url aqui")
 

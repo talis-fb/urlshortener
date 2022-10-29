@@ -1,0 +1,6 @@
+<form action="/add" method="post">
+    <h1>Adicione aqui a Url que deseja encurtar a Url</h1>
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
