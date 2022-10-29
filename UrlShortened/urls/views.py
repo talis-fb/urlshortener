@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpRequest
 from django.shortcuts import redirect, render, get_object_or_404
 from urls.models import Url
 from urls.templates.addUrl import UrlForm
+import requests as fetch
 
 def index(request:HttpRequest):
     form = UrlForm()
@@ -14,7 +15,13 @@ def add_url(request:HttpRequest):
         # url = request.GET.get('url')
         form = UrlForm(request.POST)
         if form.is_valid():
-            url = request.POST['url']
+            try:
+                url = request.POST['url']
+                if not fetch.get(url).status_code:
+                    return HttpResponse("URL INVALIDA")
+            except:
+                return HttpResponse("URL INVALIDA")
+
             hash = ''.join(random.choices(string.ascii_letters, k=7))
 
             modelUrl= Url(hash=hash, original_url=url)
